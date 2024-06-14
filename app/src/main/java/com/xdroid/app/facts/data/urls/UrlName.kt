@@ -1,11 +1,12 @@
 package com.xdroid.app.facts.data.urls
 
+import com.xdroid.app.facts.BuildConfig
 
 const val GetFacts = "v1/facts/"
 const val GetJokes = "v1/jokes/"
 const val GetRandomWords = "v1/randomword/"
 const val GetQuotes = "v1/quotes?category="
-const val ApiToken = "HyDW67iMSIcGd0h5pKFCeA==w8MULA6RKZDtRDw1"
+const val ApiToken = BuildConfig.apiKey
 
 const val postUrl = "https://anish.pockethost.io/api/collections/all_facts_db/"
 const val records = "records"
