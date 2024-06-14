@@ -15,7 +15,8 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
+        def apiToken2 = project.hasProperty('api.token') ? project['api.token'] : ""
+        buildConfigField "String", "API_TOKEN", "\"${apiToken2}\""
         buildConfigField 'String', 'apiKey', "${apiToken}"
         vectorDrawables {
             useSupportLibrary true
