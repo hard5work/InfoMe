@@ -73,6 +73,14 @@ val quoteText = TextStyle(
     letterSpacing = (1.5).sp,
     color = black
 )
+val quoteTitle = TextStyle(
+    fontFamily = RubikFont,
+    fontWeight = FontWeight.Bold,
+    fontSize = 30.sp,
+    lineHeight = 36.sp,
+    letterSpacing = (2).sp,
+    color = black
+)
 
 
 val title = TextStyle(

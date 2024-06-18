@@ -40,7 +40,7 @@ android {
             versionCode 1
             versionName "1.0"
             buildConfigField 'String', 'BASE_URL', "\"https://api.api-ninjas.com/\""
-            manifestPlaceholders = [authority: "${applicationIdSuffix}.fileprovider"]
+            manifestPlaceholders = [authority: "${applicationId}.${applicationIdSuffix}.fileprovider"]
         }
         create("user") {
             applicationIdSuffix = ".user"
@@ -48,7 +48,7 @@ android {
             versionCode 1
             versionName "1.0"
             buildConfigField 'String', 'BASE_URL', "\"https://anish.pockethost.io/api/collections/all_facts_db/\""
-            manifestPlaceholders = [authority: "${applicationIdSuffix}.fileprovider"]
+            manifestPlaceholders = [authority: "${applicationId}.${applicationIdSuffix}.fileprovider"]
         }
 
     }

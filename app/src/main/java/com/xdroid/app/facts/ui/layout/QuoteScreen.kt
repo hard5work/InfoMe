@@ -9,13 +9,10 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Share
@@ -97,12 +94,14 @@ fun QuoteScreen(navController: NavController, url: String) {
         when (states.status) {
             Status.SUCCESS -> {
                 var quotes = ""
+                var titles = ""
 
 //                RandomNumberInRange(min = 1, max = 10)
                 when (url) {
                     GetFacts -> {
                         val res = DynamicResponse.myArray<FactLists>(states.data)
-                        quotes = "${res[0].fact}"
+                        quotes = "\n\n${res[0].fact}"
+                        titles = "Did you know?"
                         myViewModel.addToMyDb(states.data!!, category = "facts", type = "facts")
                     }
                     GetJokes -> {
@@ -129,7 +128,7 @@ fun QuoteScreen(navController: NavController, url: String) {
 //                val res = DynamicResponse.myArray<FactLists>(states.data)
 //                quotes = "${res[0].fact}"
 
-                CardDesign(quotes, myViewModel, url)
+                CardDesign(quotes, myViewModel, url, titles)
                 /*  Spacer(modifier = Modifier.height(20.dp))
                   Button(onClick = {
                       myViewModel.getFacts()
@@ -149,6 +148,7 @@ fun QuoteScreen(navController: NavController, url: String) {
         when (statesUser.status) {
             Status.SUCCESS -> {
                 var quotes = ""
+                var titles = ""
                 var max = 1
 
 //                RandomNumberInRange(min = 1, max = 10)
@@ -157,6 +157,7 @@ fun QuoteScreen(navController: NavController, url: String) {
                         val res =
                             DynamicResponse.myObject<BaseModel<FactListElement>>(statesUser.data)
                         quotes = "${res.items?.get(0)?.data?.get(0)?.fact}"
+                        titles = "Did you know?"
                         max = res.totalPages!!
                     }
                     GetJokes -> {
@@ -188,7 +189,8 @@ fun QuoteScreen(navController: NavController, url: String) {
 //                val res = DynamicResponse.myArray<FactLists>(states.data)
 //                quotes = "${res[0].fact}"
 
-                AnimatedCard(quotes, myViewModel, url, max, true, page)
+//                CardDesign(quotes, myViewModel, url, titles)
+                AnimatedCard(quotes, myViewModel, url, titles, max, true, page)
                 /*  Spacer(modifier = Modifier.height(20.dp))
                   Button(onClick = {
                       myViewModel.getFacts()
@@ -201,7 +203,7 @@ fun QuoteScreen(navController: NavController, url: String) {
             Status.ERROR -> {}
             Status.LOADING -> {
                 CircularProgressIndicator()
-                AnimatedCard(isOpenEndRange = false)
+//                AnimatedCard(isOpenEndRange = false)
             }
             Status.IDLE -> {
             }
@@ -215,6 +217,7 @@ fun AnimatedCard(
     quotes: String = "",
     myViewModel: MyViewModel = koinViewModel(),
     url: String = "",
+    qTitle: String = "",
     max: Int = 1,
     isOpenEndRange: Boolean = false,
     page: MutableState<Int> = mutableStateOf(1)
@@ -233,7 +236,7 @@ fun AnimatedCard(
         modifier = Modifier
     ) {
 
-        CardDesign(quotes, myViewModel, url, max,
+        CardDesign(quotes, myViewModel, url, qTitle, max,
             modifier = Modifier
                 .graphicsLayer {
                     scaleX = scale
@@ -256,6 +259,7 @@ fun CardDesign(
     quotes: String,
     myViewModel: MyViewModel,
     url: String,
+    qTitle: String = "",
     max: Int = 1,
     modifier: Modifier = Modifier,
     page: MutableState<Int> = mutableStateOf(1)
@@ -265,115 +269,143 @@ fun CardDesign(
     var isUser by remember {
         mutableStateOf(false)
     }
-    Card(
-        modifier = modifier,
-        colors = CardDefaults.cardColors(white),
-        shape = RoundedCornerShape(10.dp),
-        elevation = CardDefaults.cardElevation(5.dp)
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.SpaceBetween
     ) {
-        Column(
+
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(10.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween
+                .padding(10.dp), horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
+            ShareCardView()
+        }
+
+        Spacer(modifier = Modifier.height(100.dp))
+        Card(
+            modifier = modifier,
+            colors = CardDefaults.cardColors(white),
+            shape = RoundedCornerShape(10.dp),
+            elevation = CardDefaults.cardElevation(5.dp)
+        ) {
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(10.dp), horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                    .padding(10.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceEvenly
             ) {
-                Image(
-                    painter = painterResource(id = com.xdroid.app.facts.R.drawable.info_me),
-                    contentDescription = "App image",
-                    modifier = Modifier
-                        .width(35.dp)
-                        .height(70.dp),
-                    contentScale = ContentScale.Crop
-                )
-                ShareCardView()
 
-
-            }
-            SelectionContainer() {
-                Text(
-                    text = quotes,
-                    style = quoteText,
-                    textAlign = TextAlign.Center,
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(20.dp),
-                )
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(10.dp), horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                /*    IconButton(onClick = { }) {
-                        Icon(
-                            Icons.Default.FavoriteBorder,
-                            contentDescription = "Share Button",
-                            tint = black
-                        )
-
-                    }*/
-                Button(onClick = {
-                    if (BuildConfig.FLAVOR != "user") {
-                        myViewModel.getFacts(url)
-                    } else {
-                        isUser = true
-                    }
-
-                }) {
-                    Row(
+                        .padding(10.dp), horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        painter = painterResource(id = com.xdroid.app.facts.R.drawable.info_me),
+                        contentDescription = "App image",
                         modifier = Modifier
-                            .padding(10.dp), horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-
-                        Text(text = "Next", style = title, color = Color.Black)
-                        Spacer(modifier = Modifier.width(5.dp))
-                        Icon(
-                            Icons.Default.ArrowForward,
-                            contentDescription = "Share Button",
-                            tint = black
-                        )
-                    }
-
+                            .width(35.dp)
+                            .height(70.dp),
+                        contentScale = ContentScale.Crop
+                    )
+                    Spacer(modifier = Modifier.width(50.dp))
+                    Text(
+                        text = qTitle,
+                        style = quoteTitle,
+                    )
 
                 }
 
-                if (isUser) {
-                    var randomNumber by rememberSaveable { mutableStateOf(1) }
+//                Spacer(modifier = Modifier.height(10.dp))
 
-                    val lifecycleOwner = LocalLifecycleOwner.current
-                    val random = remember { Random() }
+                SelectionContainer() {
+                    Text(
+                        text = quotes,
+                        style = quoteText,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp, vertical = 60.dp),
+                    )
+                }
 
-                    LaunchedEffect(Unit) {
-                        lifecycleOwner.lifecycleScope.launch {
-                            withContext(Dispatchers.Default) {
-                                val newRandomNumber = random.nextInt(max - 1 + 1) + 1
-                                withContext(Dispatchers.Main) {
-                                    randomNumber = newRandomNumber
-                                    page.value = randomNumber
-                                    myViewModel.getFactsUser(url, randomNumber)
+                Spacer(modifier = Modifier.height(40.dp))
 
-                                }
+
+            }
+
+        }
+        Spacer(modifier = Modifier.height(100.dp))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp), horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            /*    IconButton(onClick = { }) {
+                    Icon(
+                        Icons.Default.FavoriteBorder,
+                        contentDescription = "Share Button",
+                        tint = black
+                    )
+
+                }*/
+            Button(onClick = {
+                if (BuildConfig.FLAVOR != "user") {
+                    myViewModel.getFacts(url)
+                } else {
+                    isUser = true
+                }
+
+            }) {
+                Row(
+                    modifier = Modifier
+                        .padding(10.dp), horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+
+                    Text(text = "Next", style = title, color = Color.Black)
+                    Spacer(modifier = Modifier.width(5.dp))
+                    Icon(
+                        Icons.Default.ArrowForward,
+                        contentDescription = "Share Button",
+                        tint = black
+                    )
+                }
+
+
+            }
+
+            if (isUser) {
+                var randomNumber by rememberSaveable { mutableStateOf(1) }
+
+                val lifecycleOwner = LocalLifecycleOwner.current
+                val random = remember { Random() }
+
+                LaunchedEffect(Unit) {
+                    lifecycleOwner.lifecycleScope.launch {
+                        withContext(Dispatchers.Default) {
+                            val newRandomNumber = random.nextInt(max - 1 + 1) + 1
+                            withContext(Dispatchers.Main) {
+                                randomNumber = newRandomNumber
+                                page.value = randomNumber
+                                myViewModel.getFactsUser(url, randomNumber)
+
                             }
                         }
                     }
                 }
-
             }
 
         }
 
     }
+
 }
 
 
@@ -389,14 +421,24 @@ fun ShareCardView() {
     }
 
     Box(modifier = Modifier
-        .size(48.dp)
+        .border(1.dp, color = white, shape = RoundedCornerShape(40.dp))
         .clickable {
             sd = true
         }) {
-        Icon(
-            Icons.Default.Share, contentDescription = "Share Button", tint = black,
-            modifier = Modifier.align(Alignment.Center)
-        )
+        Row(
+            modifier = Modifier
+                .padding(horizontal = 25.dp, vertical = 15.dp),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            Text(text = "Share", style = title, color = white)
+            Spacer(modifier = Modifier.width(5.dp))
+            Icon(
+                Icons.Default.Share, contentDescription = "Share Button", tint = white,
+            )
+        }
+
 
     }
     if (sd) {
