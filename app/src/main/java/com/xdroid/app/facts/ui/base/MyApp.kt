@@ -14,6 +14,7 @@ import com.google.android.gms.ads.AdView
 import com.xdroid.app.facts.R
 import com.xdroid.app.facts.ui.layout.NavigationScreen
 import com.xdroid.app.facts.ui.layout.QuoteScreen
+import com.xdroid.app.facts.ui.layout.RandomScreen
 import com.xdroid.app.facts.ui.screens.ScreenName
 import com.xdroid.app.service.App.Companion.preferenceHelper
 import com.xdroid.app.service.utils.helper.PreferenceHelper
@@ -42,6 +43,10 @@ fun MyApp() {
         composable(ScreenName.QuoteScreen + "?url={url}") { backstack ->
             val quote = backstack.arguments?.getString("url") ?: ""
             QuoteScreen(navController, quote)
+        }
+        composable(ScreenName.RandomScreen + "?url={url}") { backstack ->
+            val quote = backstack.arguments?.getString("url") ?: ""
+            RandomScreen(navController, quote)
         }
 
     }

@@ -13,6 +13,7 @@ object ScreenName {
     const val Profile = "Profile"
     const val Detail = "Detail"
     const val QuoteScreen = "QuoteScreen"
+    const val RandomScreen = "RandomScreen"
 
     //Services
     const val NavigationScreen = "NavigationScreen"

@@ -43,10 +43,7 @@ import com.xdroid.app.facts.captureBitmapFromView
 import com.xdroid.app.facts.data.models.*
 import com.xdroid.app.facts.data.personal.ApiClient
 import com.xdroid.app.facts.data.personal.AppExecutors
-import com.xdroid.app.facts.data.urls.GetFacts
-import com.xdroid.app.facts.data.urls.GetJokes
-import com.xdroid.app.facts.data.urls.GetQuotes
-import com.xdroid.app.facts.data.urls.GetRandomWords
+import com.xdroid.app.facts.data.urls.*
 import com.xdroid.app.facts.saveBitmapToFile
 import com.xdroid.app.facts.ui.theme.*
 import com.xdroid.app.facts.ui.vm.MyViewModel
@@ -109,16 +106,25 @@ fun QuoteScreen(navController: NavController, url: String) {
                         quotes = "${res[0].joke}"
                         myViewModel.addToMyDb(states.data!!, category = "jokes", type = "jokes")
                     }
+                    GetDadJokes -> {
+                        val res = DynamicResponse.myArray<JokeList>(states.data)
+                        quotes = "${res[0].joke}"
+                        myViewModel.addToMyDb(
+                            states.data!!,
+                            category = "dadJokes",
+                            type = "dadJokes"
+                        )
+                    }
                     GetQuotes -> {
                         val res = DynamicResponse.myArray<QuoteList>(states.data)
                         quotes = "${res[0].quote} \n\n\n -${res[0].author}"
                         val type = "${res[0].category}"
                         myViewModel.addToMyDb(states.data!!, category = "quotes", type = type)
                     }
-                    /*  GetRandomWords -> {
-                          val res = DynamicResponse.myArray<FactLists>(states.data)
-                          quotes = "${res[0].fact}"
-                      }*/
+//                    GetRandomWords -> {
+//                        val res = DynamicResponse.myObject<WordElement>(states.data)
+//                        quotes = res.word
+//                    }
                     else -> {
                         myViewModel.addToMyDb(states.data!!, category = "facts", type = "facts")
                         val res = DynamicResponse.myArray<FactLists>(states.data)
@@ -166,6 +172,17 @@ fun QuoteScreen(navController: NavController, url: String) {
                         quotes = "${res.items?.get(0)?.data?.get(0)?.joke}"
                         max = res.totalPages!!
                     }
+                    GetDadJokes -> {
+                        val res =
+                            DynamicResponse.myObject<BaseModel<JokeListElement>>(statesUser.data)
+                        if (res.items!!.isNotEmpty()) {
+                            quotes = "${res.items[0].data?.get(0)?.joke}"
+                            max = res.totalPages!!
+                        } else {
+                            quotes = ""
+                            max = 0
+                        }
+                    }
                     GetQuotes -> {
                         val res =
                             DynamicResponse.myObject<BaseModel<QuoteListElement>>(statesUser.data)
@@ -175,10 +192,22 @@ fun QuoteScreen(navController: NavController, url: String) {
                         max = res.totalPages!!
 
                     }
-                    /*  GetRandomWords -> {
-                          val res = DynamicResponse.myArray<FactLists>(states.data)
-                          quotes = "${res[0].fact}"
-                      }*/
+                    GetRandomWords -> {
+                        val res =
+                            DynamicResponse.myObject<BaseModelObject<DictionaryElement>>(statesUser.data)
+                        if (res.items!!.isNotEmpty()) {
+                            quotes = "${res.items[0].data?.definition}"
+                            titles = "${res.items[0].data?.word}"
+                            if (quotes.isEmpty()) {
+                                quotes = "$titles definition not found"
+                            }
+                            titles = titles.uppercase()
+                            max = res.totalPages!!
+                        } else {
+                            quotes = ""
+                            max = 0
+                        }
+                    }
                     else -> {
                         val res =
                             DynamicResponse.myObject<BaseModel<FactListElement>>(statesUser.data)
@@ -390,12 +419,14 @@ fun CardDesign(
                 LaunchedEffect(Unit) {
                     lifecycleOwner.lifecycleScope.launch {
                         withContext(Dispatchers.Default) {
-                            val newRandomNumber = random.nextInt(max - 1 + 1) + 1
-                            withContext(Dispatchers.Main) {
-                                randomNumber = newRandomNumber
-                                page.value = randomNumber
-                                myViewModel.getFactsUser(url, randomNumber)
+                            if (max > 1) {
+                                val newRandomNumber = random.nextInt(max - 1 + 1) + 1
+                                withContext(Dispatchers.Main) {
+                                    randomNumber = newRandomNumber
+                                    page.value = randomNumber
+                                    myViewModel.getFactsUser(url, randomNumber)
 
+                                }
                             }
                         }
                     }

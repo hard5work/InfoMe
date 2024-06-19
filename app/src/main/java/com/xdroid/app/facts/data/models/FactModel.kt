@@ -17,9 +17,14 @@ data class JokeListElement(
 ) : java.io.Serializable
 
 data class WordElement(
-    val word: String? = null
+    val word: List<String>? = null
 ) : java.io.Serializable
 
+data class DictionaryElement(
+    val definition: String? = null,
+    val word: String? = null,
+    val valid: Boolean? = null
+) : java.io.Serializable
 
 typealias QuoteList = List<QuoteListElement>
 
@@ -39,6 +44,14 @@ data class BaseModel<T>(
     val items: List<Item<T>>? = null
 ) : java.io.Serializable
 
+data class BaseModelObject<T>(
+    val page: Long? = null,
+    val perPage: Long? = null,
+    val totalItems: Long? = null,
+    val totalPages: Int? = null,
+    val items: List<ItemObject<T>>? = null
+) : java.io.Serializable
+
 
 data class Item<T>(
     val category: String? = null,
@@ -49,6 +62,20 @@ data class Item<T>(
     val collectionName: String? = null,
     val created: String? = null,
     val data: List<T>? = null,
+    val id: String? = null,
+    val type: String? = null,
+    val updated: String? = null
+) : java.io.Serializable
+
+data class ItemObject<T>(
+    val category: String? = null,
+
+    @SerializedName("collectionId")
+    val collectionID: String? = null,
+
+    val collectionName: String? = null,
+    val created: String? = null,
+    val data: T? = null,
     val id: String? = null,
     val type: String? = null,
     val updated: String? = null

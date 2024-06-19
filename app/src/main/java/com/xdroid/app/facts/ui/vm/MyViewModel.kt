@@ -32,6 +32,16 @@ class MyViewModel(mainRepository: MainRepository, networkHelper: NetworkHelper) 
     val getFacts: StateFlow<Resource<JsonArray>>
         get() = factsRequest
 
+    private var objectRequest = MutableStateFlow<Resource<JsonObject>>(Resource.idle())
+
+    val getObject: StateFlow<Resource<JsonObject>>
+        get() = objectRequest
+
+    private var dictRequest = MutableStateFlow<Resource<JsonObject>>(Resource.idle())
+
+    val getDicObject: StateFlow<Resource<JsonObject>>
+        get() = dictRequest
+
     private var factsRequestUser = MutableStateFlow<Resource<JsonObject>>(Resource.idle())
 
     val getFactsUser: StateFlow<Resource<JsonObject>>
@@ -51,6 +61,23 @@ class MyViewModel(mainRepository: MainRepository, networkHelper: NetworkHelper) 
         defaultRequestModel.url = url
 
         requestGetArrayMethodDispose(defaultRequestModel, factsRequest)
+    }
+
+    fun getObject(url: String = GetFacts) {
+        val defaultRequestModel = DefaultRequestModel()
+        defaultRequestModel.url = url
+        requestGetMethodDispose(defaultRequestModel, objectRequest)
+    }
+
+    fun getDicObject(url: String = GetFacts) {
+        val defaultRequestModel = DefaultRequestModel()
+        defaultRequestModel.url = url
+        requestGetMethodDispose(defaultRequestModel, dictRequest)
+    }
+
+    fun resetDic(){
+        dictRequest = MutableStateFlow<Resource<JsonObject>>(Resource.idle())
+
     }
 
     fun getFactsUser(url: String = GetFacts, page: Int) {

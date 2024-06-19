@@ -48,6 +48,8 @@ class MainRepository(private val apiHelper: ApiHelper) {
         if (defaultRequestModel.setToken) {
             defaultRequestModel.headers["token"] =
                 preferenceHelper.getValue(PrefConstant.AUTH_TOKEN, "") as String
+            defaultRequestModel.headers["X-Api-Key"] =
+                preferenceHelper.getValue(PrefConstant.AUTH_TOKEN, "") as String
         }
         DebugMode.e("getMethodComposite", "header" + defaultRequestModel.headers)
         values.value = Resource.loading()

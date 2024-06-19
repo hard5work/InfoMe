@@ -10,7 +10,17 @@ object ListItems {
             "Get Facts",
             "Get Jokes",
             "Get Quotes",
-//            "Get Random Words"
+            "Get Random Words",
+            "Get DadJokes",
+        )
+    }
+    fun getMenuListAdmin(): List<String> {
+        return listOf(
+            "Get Facts",
+            "Get Jokes",
+            "Get Quotes",
+            "Get Random Words",
+            "Get DadJokes",
         )
     }
 }

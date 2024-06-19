@@ -17,10 +17,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.xdroid.app.facts.data.urls.GetFacts
-import com.xdroid.app.facts.data.urls.GetJokes
-import com.xdroid.app.facts.data.urls.GetQuotes
-import com.xdroid.app.facts.data.urls.GetRandomWords
+import com.xdroid.app.facts.BuildConfig
+import com.xdroid.app.facts.data.urls.*
 import com.xdroid.app.facts.ui.screens.ScreenName
 import com.xdroid.app.facts.ui.theme.colorPrimary
 import com.xdroid.app.facts.ui.theme.normalText
@@ -48,10 +46,19 @@ fun NavigationScreen(
                 .padding(horizontal = 16.dp)
                 .padding(bottom = 5.dp)
         ) {
-            NavList(
-                items = ListItems.getMenuList(),
-                navController = navController
-            )
+
+            if (BuildConfig.FLAVOR != "user") {
+                NavList(
+                    items = ListItems.getMenuListAdmin(),
+                    navController = navController
+                )
+            } else {
+                NavList(
+                    items = ListItems.getMenuList(),
+                    navController = navController
+                )
+            }
+
 
         }
 
@@ -123,29 +130,17 @@ fun NavigationItem(
             .padding(8.dp)
             .background(colorPrimary, shape = RoundedCornerShape(10.dp))
             .clickable {
-                val url = when (item) {
-                    "Get Facts" -> {
-                        GetFacts
-                    }
-                    "Get Jokes" -> {
-                        GetJokes
-                    }
-                    "Get Random Words" -> {
-                        GetRandomWords
-                    }
-                    "Get Quotes" -> {
-                        GetQuotes
-                    }
-                    else -> {
-                        ""
-                    }
-                }
-                navController.navigate(
-                    ScreenName.detailRoute(
-                        ScreenName.QuoteScreen,
-                        url
+                if (BuildConfig.FLAVOR != "user") {
+                    navigateToPageAdmin(
+                        item = item,
+                        navController = navController
                     )
-                )
+                } else {
+                    navigateToPageUser(
+                        item = item,
+                        navController = navController
+                    )
+                }
             },
     ) {
         Column(
@@ -163,4 +158,97 @@ fun NavigationItem(
 
 
     }
+}
+
+
+fun navigateToPageUser(
+    item: String,
+    navController: NavController
+) {
+
+    val url = when (item) {
+        "Get Facts" -> {
+            GetFacts
+        }
+        "Get Jokes" -> {
+            GetJokes
+        }
+        "Get Random Words" -> {
+            GetRandomWords
+        }
+        "Get Quotes" -> {
+            GetQuotes
+        }
+        "Get DadJokes" -> {
+            GetDadJokes
+        }
+        else -> {
+            ""
+        }
+    }
+    navController.navigate(
+        ScreenName.detailRoute(
+            ScreenName.QuoteScreen,
+            url
+        )
+    )
+}
+
+
+fun navigateToPageAdmin(
+    item: String,
+    navController: NavController
+) {
+    when (item) {
+        "Get Facts" -> {
+            navController.navigate(
+                ScreenName.detailRoute(
+                    ScreenName.QuoteScreen,
+                    GetFacts
+                )
+            )
+            GetFacts
+        }
+        "Get Jokes" -> {
+            navController.navigate(
+                ScreenName.detailRoute(
+                    ScreenName.QuoteScreen,
+                    GetJokes
+                )
+            )
+        }
+        "Get Random Words" -> {
+            navController.navigate(
+                ScreenName.detailRoute(
+                    ScreenName.RandomScreen,
+                    GetRandomWords
+                )
+            )
+        }
+        "Get Quotes" -> {
+            navController.navigate(
+                ScreenName.detailRoute(
+                    ScreenName.QuoteScreen,
+                    GetQuotes
+                )
+            )
+        }
+        "Get DadJokes" -> {
+            navController.navigate(
+                ScreenName.detailRoute(
+                    ScreenName.QuoteScreen,
+                    GetDadJokes
+                )
+            )
+        }
+        else -> {
+            navController.navigate(
+                ScreenName.detailRoute(
+                    ScreenName.QuoteScreen,
+                    ""
+                )
+            )
+        }
+    }
+
 }
